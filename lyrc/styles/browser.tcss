@@ -1,0 +1,29 @@
+SongBrowser {
+    layout: vertical;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+}
+
+#browser-title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+    padding: 0 0;
+    height: 1;
+    background: $surface-darken-1;
+    content-align: center middle;
+}
+
+#song-tree {
+    height: 1fr;
+    overflow-y: auto;
+    background: $surface;
+    border: none;
+}
+
+#new-song-btn {
+    dock: bottom;
+    width: 100%;
+    margin: 0;
+}

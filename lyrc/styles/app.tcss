@@ -1,0 +1,40 @@
+Screen {
+    layers: base overlay;
+}
+
+Header {
+    dock: top;
+    background: $primary;
+    color: $text;
+    height: 1;
+}
+
+#browser {
+    dock: left;
+    width: 26;
+    height: 100%;
+    border-right: solid $surface-darken-2;
+    background: $surface;
+    display: block;
+    layers: base;
+}
+
+#editor {
+    width: 1fr;
+    height: 100%;
+    background: $background;
+    layers: base overlay;
+}
+
+Footer {
+    dock: bottom;
+    background: $surface-darken-1;
+}
+
+#empty-state {
+    padding: 4 6;
+    color: $text-muted;
+    text-align: center;
+    content-align: center middle;
+    height: 100%;
+}

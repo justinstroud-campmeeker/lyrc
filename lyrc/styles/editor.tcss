@@ -1,0 +1,100 @@
+SongEditor {
+    padding: 1 2;
+    layers: base overlay;
+}
+
+.section-block {
+    margin-bottom: 1;
+}
+
+/* Collapsible title styling */
+.section-block Collapsible CollapsibleTitle {
+    color: $accent;
+    text-style: bold;
+    padding-left: 0;
+    background: transparent;
+}
+
+.section-block Collapsible CollapsibleTitle:hover {
+    background: $surface;
+}
+
+/* Line editor row */
+LyricLineWidget {
+    layout: horizontal;
+    height: 1;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.syllable-gutter {
+    width: 4;
+    color: $text-muted;
+    text-align: right;
+    content-align: right middle;
+    padding-right: 1;
+    height: 1;
+}
+
+LyricLineWidget Input {
+    width: 1fr;
+    height: 1;
+    border: none;
+    padding: 0 1;
+    background: transparent;
+    color: $text;
+}
+
+LyricLineWidget Input:focus {
+    background: $surface;
+    border: none;
+}
+
+.rhyme-badge {
+    width: 2;
+    height: 1;
+    content-align: center middle;
+    display: none;
+}
+
+.rhyme-badge--visible {
+    display: block;
+}
+
+.rhyme-A { color: $success; }
+.rhyme-B { color: $warning; }
+.rhyme-C { color: $error; }
+.rhyme-D { color: $accent; }
+
+/* Stage direction dropdown */
+StageDirectionDropdown {
+    layer: overlay;
+    display: none;
+    width: 26;
+    max-height: 14;
+    background: $surface;
+    border: round $primary;
+    overflow-y: auto;
+}
+
+StageDirectionDropdown ListView {
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+StageDirectionDropdown ListItem {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+StageDirectionDropdown ListItem:hover {
+    background: $primary 50%;
+}
+
+StageDirectionDropdown ListItem.--highlight {
+    background: $primary;
+    color: $background;
+}

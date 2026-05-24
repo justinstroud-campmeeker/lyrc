@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip show:*)",
+      "Bash(python -c \"import textual; print\\(textual.__version__\\)\")",
+      "WebFetch(domain:textual.textualize.io)",
+      "WebFetch(domain:pyphen.org)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"from lyrc.app import LyrcApp; from lyrc.models.song import Song; from lyrc.models.rhyme_scheme import assign_rhyme_groups; from lyrc.services.syllable_counter import count_line_syllables; from lyrc.services.song_storage import save_song, load_song; from lyrc.services.clipboard import copy_song; print\\('All imports OK'\\)\")",
+      "Bash(python -c \"from lyrc.app import LyrcApp; print\\('All imports OK'\\)\")",
+      "Bash(python3 -c \"from lyrc.app import LyrcApp; print\\('OK'\\)\")",
+      "Bash(python3:*)",
+      "Bash(where python:*)",
+      "Bash(where python3:*)",
+      "Bash(python -m venv .venv)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(.venv/Scripts/python -c \"from lyrc.app import LyrcApp; print\\('OK'\\)\")"
+    ]
+  }
+}
