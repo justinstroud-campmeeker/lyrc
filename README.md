@@ -23,6 +23,24 @@ A cross-platform desktop application for writing song lyrics, designed to pair w
 
 ---
 
+## Screenshots
+
+#### Song browser
+
+ <img width="421" height="1323" alt="image" src="https://github.com/user-attachments/assets/5e059296-5997-45e6-9c2d-a76424a19903" />
+
+#### Editor
+
+  <img width="1171" height="1219" alt="image" src="https://github.com/user-attachments/assets/cf76f978-6e49-4fdc-b991-791e88e781bd" />
+
+#### Rhyming badges
+
+  <img width="130" height="208" alt="image" src="https://github.com/user-attachments/assets/85be1506-b6be-4944-876d-fd1c97c357be" />
+
+#### Line with syllable count and rhyme badge
+
+  <img width="1336" height="39" alt="image" src="https://github.com/user-attachments/assets/1101c492-1250-432d-bfa6-b920c3f4c2c7" />
+
 ## Installation
 
 ### Prerequisites
