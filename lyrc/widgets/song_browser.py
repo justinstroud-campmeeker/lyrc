@@ -1,50 +1,60 @@
+"""Left-panel song browser widget."""
 from __future__ import annotations
 
 from pathlib import Path
 
-from textual.app import ComposeResult
-from textual.message import Message
-from textual.widget import Widget
-from textual.widgets import Button, DirectoryTree, Label
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import (
+    QLabel, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QWidget,
+)
+
+from lyrc.services.song_storage import list_songs
 
 
-class MdOnlyDirectoryTree(DirectoryTree):
-    def filter_paths(self, paths):
-        return [p for p in paths if p.is_dir() or p.suffix == ".md"]
+class SongBrowserPanel(QWidget):
+    """Sidebar listing all songs with a New Song button."""
+
+    song_selected = Signal(Path)
+    new_song_requested = Signal()
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setObjectName("songBrowser")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(4)
+
+        title = QLabel("Songs")
+        title.setObjectName("browserTitle")
+        layout.addWidget(title)
+
+        self._list = QListWidget()
+        self._list.setObjectName("songList")
+        self._list.itemActivated.connect(self._on_item_activated)
+        layout.addWidget(self._list, 1)
+
+        new_btn = QPushButton("+ New Song")
+        new_btn.setObjectName("newSongBtn")
+        new_btn.clicked.connect(self.new_song_requested)
+        layout.addWidget(new_btn)
+
+        self.refresh_list()
+
+    # ── public API ─────────────────────────────────────────────────────────────
+
+    def refresh_list(self) -> None:
+        self._list.clear()
+        for path in list_songs():
+            item = QListWidgetItem(path.stem)
+            item.setData(Qt.ItemDataRole.UserRole, path)
+            self._list.addItem(item)
+
+    # ── private ────────────────────────────────────────────────────────────────
+
+    def _on_item_activated(self, item: QListWidgetItem) -> None:
+        path: Path | None = item.data(Qt.ItemDataRole.UserRole)
+        if path:
+            self.song_selected.emit(path)
 
 
-class SongBrowser(Widget):
-    """Left-panel song file browser."""
-
-    class SongSelected(Message):
-        def __init__(self, path: Path) -> None:
-            super().__init__()
-            self.path = path
-
-    class NewSongRequested(Message):
-        pass
-
-    def __init__(self, songs_dir: Path, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self._songs_dir = songs_dir
-
-    def compose(self) -> ComposeResult:
-        yield Label("Songs", id="browser-title")
-        yield MdOnlyDirectoryTree(str(self._songs_dir), id="song-tree")
-        yield Button("+ New Song", id="new-song-btn", variant="primary")
-
-    def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
-        event.stop()
-        self.post_message(self.SongSelected(event.path))
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "new-song-btn":
-            event.stop()
-            self.post_message(self.NewSongRequested())
-
-    def refresh_tree(self) -> None:
-        try:
-            tree = self.query_one("#song-tree", MdOnlyDirectoryTree)
-            tree.reload()
-        except Exception:
-            pass

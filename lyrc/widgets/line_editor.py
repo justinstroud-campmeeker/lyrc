@@ -1,170 +1,158 @@
+"""Single editable lyric line with syllable gutter and rhyme badge."""
 from __future__ import annotations
 
-from textual import events
-from textual.app import ComposeResult
-from textual.geometry import Offset
-from textual.message import Message
-from textual.reactive import reactive
-from textual.widget import Widget
-from textual.widgets import Input, Static
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeyEvent
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from lyrc.services.syllable_counter import count_line_syllables
+from lyrc.services.text_utils import word_at_cursor
+from lyrc.widgets.rhyme_badge import RhymeBadge
 
 
-class LyricLineWidget(Widget):
-    """A single editable lyric line with a syllable-count gutter and rhyme badge."""
+class _LineEdit(QLineEdit):
+    """QLineEdit that emits extra signals for navigation keys."""
 
-    DEFAULT_CSS = ""
+    open_bracket = Signal()
+    focus_prev = Signal()
+    focus_next = Signal()
+    enter_pressed = Signal(str, str)   # text_before, text_after
+    delete_line = Signal()
+    thesaurus_requested = Signal(str, int, int)
+    rhyme_requested = Signal(str, int, int)
 
-    text: reactive[str] = reactive("", layout=False)
-    syllable_count: reactive[int] = reactive(0, layout=False)
-    rhyme_group: reactive[str] = reactive("", layout=False)
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        key = event.key()
+        mods = event.modifiers()
 
-    # ── Messages ────────────────────────────────────────────────────────────
+        if mods == Qt.KeyboardModifier.ControlModifier:
+            if key == Qt.Key.Key_T:
+                result = word_at_cursor(self.text(), self.cursorPosition())
+                if result:
+                    word, start, end = result
+                    self.thesaurus_requested.emit(word, start, end)
+                return
+            if key == Qt.Key.Key_R:
+                result = word_at_cursor(self.text(), self.cursorPosition())
+                if result:
+                    word, start, end = result
+                    self.rhyme_requested.emit(word, start, end)
+                return
 
-    class TextChanged(Message):
-        def __init__(self, widget: "LyricLineWidget", new_text: str) -> None:
-            super().__init__()
-            self.widget = widget
-            self.new_text = new_text
-
-    class OpenBracketTyped(Message):
-        def __init__(self, widget: "LyricLineWidget", cursor_offset: Offset) -> None:
-            super().__init__()
-            self.widget = widget
-            self.cursor_offset = cursor_offset
-
-    class LineDeleted(Message):
-        def __init__(self, widget: "LyricLineWidget") -> None:
-            super().__init__()
-            self.widget = widget
-
-    class FocusNext(Message):
-        def __init__(self, widget: "LyricLineWidget") -> None:
-            super().__init__()
-            self.widget = widget
-
-    class FocusPrev(Message):
-        def __init__(self, widget: "LyricLineWidget") -> None:
-            super().__init__()
-            self.widget = widget
-
-    class NewLineRequested(Message):
-        def __init__(
-            self,
-            widget: "LyricLineWidget",
-            text_before: str,
-            text_after: str,
-        ) -> None:
-            super().__init__()
-            self.widget = widget
-            self.text_before = text_before
-            self.text_after = text_after
-
-    # ── Lifecycle ────────────────────────────────────────────────────────────
-
-    def __init__(self, text: str = "", rhyme_group: str = "", **kwargs) -> None:
-        super().__init__(**kwargs)
-        self._init_text = text
-        self._init_rhyme = rhyme_group
-
-    def compose(self) -> ComposeResult:
-        yield Static("0", id="syllable-count", classes="syllable-gutter")
-        yield Input(value=self._init_text, id="line-input")
-        yield Static("", id="rhyme-badge", classes="rhyme-badge")
-
-    def on_mount(self) -> None:
-        self.text = self._init_text
-        self.rhyme_group = self._init_rhyme
-        count = count_line_syllables(self._init_text)
-        self.syllable_count = count
-        self.query_one("#syllable-count", Static).update(str(count) if count else "·")
-
-    # ── Input events ─────────────────────────────────────────────────────────
-
-    def on_input_changed(self, event: Input.Changed) -> None:
-        event.stop()
-        new_val = event.value
-        self.text = new_val
-
-        count = count_line_syllables(new_val)
-        self.syllable_count = count
-        self.query_one("#syllable-count", Static).update(str(count) if count else "·")
-
-        self.post_message(self.TextChanged(self, new_val))
-
-        # Detect '[' as the last typed character
-        if new_val.endswith("["):
-            region = self.content_region
-            offset = Offset(region.x + 5, region.y + 1)
-            self.post_message(self.OpenBracketTyped(self, offset))
-
-    def on_key(self, event: events.Key) -> None:
-        inp = self.query_one("#line-input", Input)
-        cursor = inp.cursor_position
-
-        if event.key == "up":
-            if cursor == 0:
-                event.stop()
-                self.post_message(self.FocusPrev(self))
+        if key == Qt.Key.Key_Up and self.cursorPosition() == 0:
+            self.focus_prev.emit()
+            return
+        if key == Qt.Key.Key_Down and self.cursorPosition() == len(self.text()):
+            self.focus_next.emit()
+            return
+        if key == Qt.Key.Key_Return or key == Qt.Key.Key_Enter:
+            pos = self.cursorPosition()
+            val = self.text()
+            self.enter_pressed.emit(val[:pos], val[pos:])
+            return
+        if key == Qt.Key.Key_Backspace and self.text() == "":
+            self.delete_line.emit()
             return
 
-        if event.key == "down":
-            if cursor >= len(inp.value):
-                event.stop()
-                self.post_message(self.FocusNext(self))
+        super().keyPressEvent(event)
+
+        # detect '[' after the default handler so self.text() is updated
+        if key == Qt.Key.Key_BracketLeft:
+            self.open_bracket.emit()
+
+
+class LineEditorWidget(QWidget):
+    """One lyric line: [syllable count | input field | rhyme badge]."""
+
+    text_changed = Signal(str)
+    open_bracket = Signal()
+    focus_prev = Signal()
+    focus_next = Signal()
+    enter_pressed = Signal(str, str)
+    delete_line = Signal()
+    thesaurus_requested = Signal(str, int, int)
+    rhyme_requested = Signal(str, int, int)
+
+    def __init__(self, text: str = "", rhyme_group: str = "", parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._suppress_change = False
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+
+        self._syl_label = QLabel("·")
+        self._syl_label.setFixedWidth(28)
+        self._syl_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self._syl_label.setObjectName("syllableCount")
+
+        self._edit = _LineEdit()
+        self._edit.setText(text)
+        self._edit.setObjectName("lineEdit")
+
+        self._badge = RhymeBadge()
+
+        layout.addWidget(self._syl_label)
+        layout.addWidget(self._edit, 1)
+        layout.addWidget(self._badge)
+
+        # wire internal signals
+        self._edit.textChanged.connect(self._on_text_changed)
+        self._edit.open_bracket.connect(self.open_bracket)
+        self._edit.focus_prev.connect(self.focus_prev)
+        self._edit.focus_next.connect(self.focus_next)
+        self._edit.enter_pressed.connect(self.enter_pressed)
+        self._edit.delete_line.connect(self.delete_line)
+        self._edit.thesaurus_requested.connect(self.thesaurus_requested)
+        self._edit.rhyme_requested.connect(self.rhyme_requested)
+
+        # initialise counts
+        self._update_syllable_label(text)
+        self.set_rhyme_group(rhyme_group)
+
+    # ── slots ──────────────────────────────────────────────────────────────────
+
+    def _on_text_changed(self, value: str) -> None:
+        if self._suppress_change:
             return
+        self._update_syllable_label(value)
+        self.text_changed.emit(value)
 
-        if event.key == "enter":
-            event.stop()
-            val = inp.value
-            before = val[:cursor]
-            after = val[cursor:]
-            self.post_message(self.NewLineRequested(self, before, after))
-            return
+    def _update_syllable_label(self, text: str) -> None:
+        count = count_line_syllables(text)
+        self._syl_label.setText(str(count) if count else "·")
 
-        if event.key == "backspace":
-            if inp.value == "":
-                event.stop()
-                self.post_message(self.LineDeleted(self))
-            return
+    # ── public API ─────────────────────────────────────────────────────────────
 
-    # ── Reactives ────────────────────────────────────────────────────────────
+    def get_value(self) -> str:
+        return self._edit.text()
 
-    def watch_rhyme_group(self, group: str) -> None:
-        try:
-            badge = self.query_one("#rhyme-badge", Static)
-        except Exception:
-            return
-        if group:
-            badge.update(group)
-            badge.set_classes(f"rhyme-badge rhyme-badge--visible rhyme-{group}")
-        else:
-            badge.update("")
-            badge.set_classes("rhyme-badge")
+    def set_value(self, value: str) -> None:
+        self._suppress_change = True
+        self._edit.setText(value)
+        self._update_syllable_label(value)
+        self._suppress_change = False
 
-    def watch_syllable_count(self, count: int) -> None:
-        try:
-            gutter = self.query_one("#syllable-count", Static)
-            gutter.update(str(count) if count else "·")
-        except Exception:
-            pass
+    def set_rhyme_group(self, group: str) -> None:
+        self._badge.set_group(group)
 
-    # ── Public API ───────────────────────────────────────────────────────────
+    def set_syllable_count(self, count: int) -> None:
+        self._syl_label.setText(str(count) if count else "·")
 
     def focus_input(self, cursor_end: bool = False) -> None:
-        inp = self.query_one("#line-input", Input)
-        inp.focus()
+        self._edit.setFocus()
         if cursor_end:
-            inp.cursor_position = len(inp.value)
+            self._edit.setCursorPosition(len(self._edit.text()))
 
-    def get_input_value(self) -> str:
-        return self.query_one("#line-input", Input).value
+    def cursor_position(self) -> int:
+        return self._edit.cursorPosition()
 
-    def set_input_value(self, value: str) -> None:
-        inp = self.query_one("#line-input", Input)
-        with inp.prevent(Input.Changed):
-            inp.value = value
-        self.text = value
-        count = count_line_syllables(value)
-        self.syllable_count = count
+    def replace_word(self, start: int, end: int, replacement: str) -> None:
+        text = self._edit.text()
+        new_text = text[:start] + replacement + text[end:]
+        self._suppress_change = True
+        self._edit.setText(new_text)
+        self._edit.setCursorPosition(start + len(replacement))
+        self._suppress_change = False
+        self._update_syllable_label(new_text)
+        self.text_changed.emit(new_text)

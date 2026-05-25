@@ -1,0 +1,311 @@
+/* ── Global ──────────────────────────────────────────────────────────────── */
+QMainWindow, QWidget {
+    background-color: #1e2127;
+    color: #abb2bf;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+}
+
+QScrollArea {
+    border: none;
+}
+
+QScrollBar:vertical {
+    background: #2c313a;
+    width: 8px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background: #4b5263;
+    min-height: 20px;
+    border-radius: 4px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+/* ── Status bar ──────────────────────────────────────────────────────────── */
+QStatusBar {
+    background: #21252b;
+    color: #636d83;
+    font-size: 12px;
+}
+
+/* ── Menu bar ────────────────────────────────────────────────────────────── */
+QMenuBar {
+    background: #21252b;
+    color: #abb2bf;
+}
+QMenuBar::item:selected {
+    background: #3e4451;
+}
+QMenu {
+    background: #21252b;
+    color: #abb2bf;
+    border: 1px solid #3e4451;
+}
+QMenu::item:selected {
+    background: #3e4451;
+}
+
+/* ── Song browser ────────────────────────────────────────────────────────── */
+#songBrowser {
+    background: #21252b;
+    border-right: 1px solid #2c313a;
+    min-width: 180px;
+    max-width: 260px;
+}
+
+#browserTitle {
+    color: #528bff;
+    font-weight: bold;
+    padding: 4px 4px 2px 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#songList {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+#songList::item {
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+#songList::item:hover {
+    background: #2c313a;
+}
+#songList::item:selected {
+    background: #3e4451;
+    color: #61afef;
+}
+
+#newSongBtn {
+    background: #528bff;
+    color: #ffffff;
+    border: none;
+    padding: 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+#newSongBtn:hover {
+    background: #4078f2;
+}
+#newSongBtn:pressed {
+    background: #3a6fe0;
+}
+
+/* ── Editor container ────────────────────────────────────────────────────── */
+#editorScroll {
+    background: #1e2127;
+    border: none;
+}
+#editorContainer {
+    background: #1e2127;
+}
+
+#emptyState {
+    color: #4b5263;
+    font-size: 14px;
+}
+
+/* ── Section widget ──────────────────────────────────────────────────────── */
+#sectionHeaderRow {
+    background: #21252b;
+    border-radius: 3px;
+}
+
+#sectionTitle {
+    color: #e5c07b;
+    font-weight: bold;
+}
+
+#collapseBtn {
+    background: transparent;
+    border: none;
+    color: #636d83;
+    font-size: 10px;
+}
+#collapseBtn:hover {
+    color: #abb2bf;
+}
+
+#sectionActionBtn {
+    background: transparent;
+    border: 1px solid #3e4451;
+    color: #636d83;
+    border-radius: 2px;
+    font-size: 11px;
+}
+#sectionActionBtn:hover {
+    background: #3e4451;
+    color: #abb2bf;
+}
+
+#sectionContent {
+    background: transparent;
+    padding-left: 8px;
+}
+
+#sectionSep {
+    color: #2c313a;
+    margin: 2px 0;
+}
+
+/* ── Line editor ─────────────────────────────────────────────────────────── */
+#syllableCount {
+    color: #4b5263;
+    font-size: 11px;
+    min-width: 28px;
+}
+
+#lineEdit {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    color: #abb2bf;
+    padding: 1px 2px;
+    selection-background-color: #3e4451;
+}
+#lineEdit:focus {
+    border-bottom: 1px solid #528bff;
+    background: #252930;
+}
+
+/* ── Stage direction popup ───────────────────────────────────────────────── */
+#stageDirectionPopup {
+    background: #21252b;
+    border: 1px solid #528bff;
+    border-radius: 4px;
+}
+
+#sdList {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+#sdList::item {
+    padding: 3px 8px;
+}
+#sdList::item:hover {
+    background: #2c313a;
+}
+#sdList::item:selected {
+    background: #528bff;
+    color: #ffffff;
+}
+
+/* ── Word suggestion popup ───────────────────────────────────────────────── */
+#wordSuggestionPopup {
+    background: #21252b;
+    border: 1px solid #98c379;
+    border-radius: 4px;
+}
+
+#wspTitle {
+    color: #98c379;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 2px 6px;
+    background: #1e2127;
+}
+
+#wspList {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+#wspList::item {
+    padding: 3px 8px;
+}
+#wspList::item:hover {
+    background: #2c313a;
+}
+#wspList::item:selected {
+    background: #98c379;
+    color: #1e2127;
+}
+
+#wspLoading {
+    color: #636d83;
+    padding: 6px;
+}
+
+/* ── New song dialog ─────────────────────────────────────────────────────── */
+#newSongDialog QLabel {
+    color: #abb2bf;
+}
+
+#newSongDialog QLineEdit {
+    background: #2c313a;
+    border: 1px solid #3e4451;
+    color: #abb2bf;
+    padding: 4px 6px;
+    border-radius: 3px;
+}
+#newSongDialog QLineEdit:focus {
+    border-color: #528bff;
+}
+
+QPushButton#okBtn {
+    background: #528bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 16px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+QPushButton#okBtn:hover {
+    background: #4078f2;
+}
+
+QPushButton#cancelBtn {
+    background: #3e4451;
+    color: #abb2bf;
+    border: none;
+    padding: 5px 16px;
+    border-radius: 3px;
+}
+QPushButton#cancelBtn:hover {
+    background: #4b5263;
+}
+
+/* ── Help dialog ─────────────────────────────────────────────────────────── */
+#helpHeading {
+    color: #528bff;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 4px 0;
+}
+
+#helpTable {
+    background: #21252b;
+    alternate-background-color: #262b33;
+    border: 1px solid #3e4451;
+    border-radius: 3px;
+    gridline-color: transparent;
+    color: #abb2bf;
+}
+
+#helpTable QHeaderView::section {
+    background: #2c313a;
+    color: #636d83;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: none;
+    border-bottom: 1px solid #3e4451;
+}
+
+#helpTable::item {
+    padding: 4px 8px;
+}
+
+#helpTable::item:first-child {
+    color: #e5c07b;
+    font-weight: bold;
+}
+

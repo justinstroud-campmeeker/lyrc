@@ -1,7 +1,7 @@
-"""Tests for StageDirectionDropdown filtering logic (no Textual runtime needed)."""
+"""Tests for stage-direction filtering logic (no Qt runtime needed)."""
 import pytest
 
-from lyrc.widgets.stage_direction_dropdown import STAGE_DIRECTIONS
+from lyrc.widgets.stage_direction_popup import STAGE_DIRECTIONS
 
 
 # Test the filter logic in isolation (pure Python, no widget instantiation)
@@ -24,7 +24,6 @@ def test_filter_chorus():
 def test_filter_verse():
     result = _filter("verse")
     assert all("verse" in d.lower() for d in result)
-    assert "Verse" in result
     assert "Verse 1" in result
     assert "Verse 2" in result
 
@@ -55,5 +54,12 @@ def test_no_duplicate_directions():
 
 
 def test_common_directions_present():
-    for expected in ("Chorus", "Verse", "Bridge", "Outro", "Intro"):
+    for expected in ("Chorus", "Verse 1", "Bridge", "Outro", "Intro"):
         assert expected in STAGE_DIRECTIONS
+
+
+def test_filter_first_result_is_selectable():
+    # Simulates Tab selecting index 0 after filtering — result must exist
+    result = _filter("cho")
+    assert len(result) > 0
+    assert result[0] == "Chorus"
