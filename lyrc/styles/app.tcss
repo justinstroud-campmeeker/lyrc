@@ -2,6 +2,78 @@ Screen {
     layers: base overlay;
 }
 
+StageDirectionDropdown {
+    layer: overlay;
+    display: none;
+    width: 26;
+    max-height: 14;
+    background: $surface;
+    border: round $primary;
+    overflow-y: auto;
+}
+
+StageDirectionDropdown ListView {
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+StageDirectionDropdown ListItem {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+StageDirectionDropdown ListItem:hover {
+    background: $primary 50%;
+}
+
+StageDirectionDropdown ListItem.--highlight {
+    background: $primary;
+    color: $background;
+}
+
+WordSuggestionPopup {
+    layer: overlay;
+    display: none;
+    width: 32;
+    max-height: 20;
+    background: $surface;
+    border: round $accent;
+    overflow-y: auto;
+    align: center middle;
+}
+
+#wsp-title {
+    text-style: bold;
+    color: $accent;
+    padding: 0 1;
+    height: 1;
+    background: $surface-darken-1;
+}
+
+WordSuggestionPopup ListView {
+    background: transparent;
+    padding: 0;
+    border: none;
+    height: auto;
+}
+
+WordSuggestionPopup ListItem {
+    height: 1;
+    padding: 0 1;
+    background: transparent;
+}
+
+WordSuggestionPopup ListItem:hover {
+    background: $accent 30%;
+}
+
+WordSuggestionPopup ListItem.--highlight {
+    background: $accent;
+    color: $background;
+}
+
 Header {
     dock: top;
     background: $primary;

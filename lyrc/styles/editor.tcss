@@ -1,6 +1,5 @@
 SongEditor {
     padding: 1 2;
-    layers: base overlay;
 }
 
 .section-block {
@@ -67,34 +66,3 @@ LyricLineWidget Input:focus {
 .rhyme-C { color: $error; }
 .rhyme-D { color: $accent; }
 
-/* Stage direction dropdown */
-StageDirectionDropdown {
-    layer: overlay;
-    display: none;
-    width: 26;
-    max-height: 14;
-    background: $surface;
-    border: round $primary;
-    overflow-y: auto;
-}
-
-StageDirectionDropdown ListView {
-    background: transparent;
-    padding: 0;
-    border: none;
-}
-
-StageDirectionDropdown ListItem {
-    height: 1;
-    padding: 0 1;
-    background: transparent;
-}
-
-StageDirectionDropdown ListItem:hover {
-    background: $primary 50%;
-}
-
-StageDirectionDropdown ListItem.--highlight {
-    background: $primary;
-    color: $background;
-}

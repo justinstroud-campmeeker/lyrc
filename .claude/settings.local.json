@@ -14,7 +14,21 @@
       "Bash(where python3:*)",
       "Bash(python -m venv .venv)",
       "Bash(.venv/Scripts/pip install:*)",
-      "Bash(.venv/Scripts/python -c \"from lyrc.app import LyrcApp; print\\('OK'\\)\")"
+      "Bash(.venv/Scripts/python -c \"from lyrc.app import LyrcApp; print\\('OK'\\)\")",
+      "Bash(.venv/Scripts/pytest tests/ -v)",
+      "Bash(.venv/Scripts/pytest tests/ -q)",
+      "Bash(python -c \"import PySide6; print\\('PySide6 ok'\\)\")",
+      "Bash(python -m pip install \"PySide6>=6.6.0\")",
+      "Bash(python -c ':*)",
+      "Bash(python -m pip install pyphen pyperclip requests -q)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python -m pip install pytest -q)",
+      "Bash(python -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(python -c \"import PySide6\")",
+      "Bash(py --version)",
+      "Bash(py -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(python main.py)",
+      "Bash(python -c \"import PySide6; print\\(PySide6.__version__\\)\")"
     ]
   }
 }

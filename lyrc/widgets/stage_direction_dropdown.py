@@ -86,3 +86,10 @@ class StageDirectionDropdown(Widget):
             event.stop()
             self.post_message(self.Dismissed())
             self.hide()
+        elif event.key == "tab":
+            event.stop()
+            lv = self.query_one(ListView)
+            idx = lv.index
+            if idx is not None and 0 <= idx < len(self._filtered):
+                self.post_message(self.DirectionSelected(self._filtered[idx]))
+            self.hide()
